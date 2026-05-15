@@ -24,12 +24,12 @@ jobs:
 
       - name: Build and push images
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/frontend:latest ./frontend
-          docker build -t ghcr.io/${{ github.repository }}/backend:latest ./backend
-          docker build -t ghcr.io/${{ github.repository }}/nginx:latest ./nginx
-          docker push ghcr.io/${{ github.repository }}/frontend:latest
-          docker push ghcr.io/${{ github.repository }}/backend:latest
-          docker push ghcr.io/${{ github.repository }}/nginx:latest
+          docker build -t ghcr.io/conradhorizon/csc424-final/frontend:latest ./frontend
+          docker build -t ghcr.io/conradhorizon/csc424-final/backend:latest ./backend
+          docker build -t ghcr.io/conradhorizon/csc424-final/nginx:latest ./nginx
+          docker push ghcr.io/conradhorizon/csc424-final/frontend:latest
+          docker push ghcr.io/conradhorizon/csc424-final/backend:latest
+          docker push ghcr.io/conradhorizon/csc424-final/nginx:latest
 
       - name: Deploy to QA VM
         uses: appleboy/ssh-action@v1.0.3
