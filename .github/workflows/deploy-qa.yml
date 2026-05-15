@@ -1,0 +1,44 @@
+name: Deploy to QA
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push images
+        run: |
+          docker build -t ghcr.io/${{ github.repository }}/frontend:latest ./frontend
+          docker build -t ghcr.io/${{ github.repository }}/backend:latest ./backend
+          docker build -t ghcr.io/${{ github.repository }}/nginx:latest ./nginx
+          docker push ghcr.io/${{ github.repository }}/frontend:latest
+          docker push ghcr.io/${{ github.repository }}/backend:latest
+          docker push ghcr.io/${{ github.repository }}/nginx:latest
+
+      - name: Deploy to QA VM
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.QA_HOST }}
+          username: ${{ secrets.QA_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/csc424-final-exam
+            git pull origin main
+            docker compose pull
+            docker compose up -d
