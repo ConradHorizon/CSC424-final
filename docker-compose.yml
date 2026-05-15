@@ -1,0 +1,32 @@
+services:
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend
+    container_name: backend
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5s bash -c ':> /dev/tcp/127.0.0.1/5000' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
